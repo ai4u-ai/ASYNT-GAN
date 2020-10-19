@@ -472,7 +472,7 @@ with tf.device('/device:GPU:1'):
             print(it)
 
             fakes = []
-            for i in range(1):
+            for i in range(2):
                 lg, pp = prepare_data(ligandPath, proteinPath, sample_pointsLignads=int(1024 / progressive_samples[i]))
 
                 ligand_bonds = get_points_mesh(ligand_bondsPath)
