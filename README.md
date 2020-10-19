@@ -4,7 +4,7 @@ Computer-assisted de novo design of natural product mimetics offers a viable str
 
 
 ###### Install TF.GRAPHICS
-
+We are using the Pointnet implementation of TF Graphics we need to clone and install it locally 
 ```
 git clone https://github.com/tensorflow/graphics.git
 cd graphics
@@ -17,6 +17,7 @@ https://www.lfd.uci.edu/~gohlke/pythonlibs/#openexr
 `pip install path_to_whl`
 
 Install tf graphics
+
 `pip install -e . --user`
 
 ###### Install Pymol
