@@ -29,4 +29,7 @@ The file rcsb_pdb_ids_20200628065205.txt holds ids of pdb files related to covid
 The convert_to_wrl_files_pymol.py will fetch all the pdb files  split them into ligands and proteins, centralize them and create .wrl files for each ligand and chain in a particular protein.
 The convert_to_ply_blender.py will iterate over the files in the  data/to_convert folder and create ply files in the converted folder
 
-The ASYNT-GAN.py main will sample from those files.
+The ASYNT-GAN.py main will sample from those files train and save the model checkpoints to tf_ckpts_v2 folder and tensorboard logs to logs3d folder.
+to render tensorboard 
+`tensorboard --logdir logs3d`
+The port url and port will be shown in the cmd
