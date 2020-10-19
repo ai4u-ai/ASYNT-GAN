@@ -21,7 +21,7 @@ Install tf graphics
 `pip install -e . --user`
 
 ###### Install Pymol
-
+Pymol is used to generate the 3d representations in .wrl format
 https://www.lfd.uci.edu/~gohlke/pythonlibs/#pymol-open-source
 
 ###### PREPARE DATA
