@@ -1,11 +1,12 @@
 import tensorflow as tf
 
-bottleneck_size = 3
 import regular_grid_interpolation
-from tensorflow_graphics.datasets import modelnet40
+from tensorboard.plugins.mesh import summary_v2 as mesh_summary
+from tensorflow_graphics.nn.loss import chamfer_distance
+
 from tensorflow_graphics.nn.layer import pointnet
 from tensorflow.keras.layers import multiply
-# ds_train, info = modelnet40.ModelNet40.load(split="train", with_info=True)
+import numpy as np
 import open3d as o3d
 
 
@@ -43,10 +44,6 @@ class PointGenConTF(tf.keras.layers.Layer):
         x = self.relu(self.bn3(self.conv3(x)))
         x = tf.keras.activations.tanh(self.conv4(x))
         return x
-
-
-import tensorflow_graphics.nn.layer.graph_convolution as gc_layer
-import numpy as np
 
 
 def _dense_to_sparse(data):
@@ -227,9 +224,7 @@ class PointnetGenerator(tf.keras.layers.Layer):
 
     def call(self, ligand, protein, concat=False, training=False):
 
-        # out=tf.concat([ligand,protein],axis=1)
         out = protein
-        # out = self.final(out)
 
         downP = self.conv_in(out)
         downsP = [downP]
@@ -249,17 +244,7 @@ class PointnetGenerator(tf.keras.layers.Layer):
             x_ = mod(x_, training=training)
             ups.append(x_)
         out = self.upsamp(ups[-1])[:, :-1, :]
-        # Interpolate
-        # lat, weights, xloc=self._interp(out,tf.concat([ligand,protein],axis=1))
-        # # print(lat.shape,weights.shape, xloc.shape)
-        # nb, np, nn, nc = lat.get_shape().as_list()
-        # nd = 3
-        # inputs = tf.concat([xloc, lat], axis=-1)
-        # inputs = tf.reshape(inputs, [-1, nc + nd])
-        # inputs =tf.expand_dims(inputs, axis=0)
-        #
-        # out_=inputs
-        # self.dense1(out_)
+
         out = self.conv_out(out)
         out_ = out
 
@@ -267,16 +252,10 @@ class PointnetGenerator(tf.keras.layers.Layer):
             out_ = tf.nn.leaky_relu(dens(out_))
             out_ = tf.concat([out_, out], axis=-1)
 
-        # out_=tf.nn.leaky_relu(self.dense2(out_))
-        # out =self.dense3(out_)
-        # out=tf.math.top_k(out,out.shape[1]//2)
-        # out=self.class_head(out_)
         out = self.conv(out_)
-        # out=self.denseout(out_)
+
         if concat:
             out = tf.concat([out, ligand], axis=1)
-            # out=    self.res_conc(out)
-            # out =   self.dense_conc(out)
 
         return out
 
@@ -292,13 +271,6 @@ class PointnetGenerator(tf.keras.layers.Layer):
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits
         residual = cross_entropy(labels, logits)
         return tf.reduce_mean(input_tensor=residual)
-
-
-# data=iter(ds_train)
-# mesh = o3d.io.read_triangle_mesh("D:\\Downloads\\ModelNet10\\ModelNet10\\bed\\train\\bed_0015.off")
-# o3d.visualization.draw_geometries([mesh])
-from tensorboard.plugins.mesh import summary_v2 as mesh_summary
-from tensorflow_graphics.nn.loss import chamfer_distance
 
 
 def reduce_sample(path, reduce_bound=1024, sample_points=1024):
